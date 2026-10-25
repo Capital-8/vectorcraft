@@ -1,8 +1,10 @@
 # VectorCraft — egui 0.37 migration plan
 
-**Status (2026-10-25, published integration):** qualification checkpoint `83d6dd2d6603845978f949523e6da2b4945dcffb` was tested with the integration of post-PR-4113 `main` `6e7854967d6b8a094bfed809643bd957aa3ba66f` and the two `Id::unique` edits in `crates/ui-egui/src/dialogs/recolor.rs`. Managed job `egui037-vector-postmerge-ci-20261025-1381` passed all 12 mandatory CI stages for that working tree. Publication commit `1072d0e263623882da68d8115934630abbef33ae` records the integration and both edits; it is published in PR #4173. PR #4113 is merged. Native/platform GUI and IME workflows, final packages and paired app performance remain open.
+**Status (2026-10-25, shared-docking reconciliation):** the published qualification remains checkpoint `83d6dd2d6603845978f949523e6da2b4945dcffb`, tested with post-PR-4113 `main` `6e7854967d6b8a094bfed809643bd957aa3ba66f` and the two `Id::unique` edits at `crates/ui-egui/src/dialogs/recolor.rs:384,725`; managed job `egui037-vector-postmerge-ci-20261025-1381` passed all 12 mandatory CI stages for that working tree, and publication commit `1072d0e263623882da68d8115934630abbef33ae` records it in PR #4173. The reviewed recolor code is already in `main`: `HEAD` and `origin/main` resolve the same blob `6050af15a3bf7b9a056df6dff347bda7690ad251` for that file.
 
-**Historical status (superseded, not current acceptance):** the earlier reconciliation against `main` `8bf090b25389b48aa6f9d7415de57c9ce7ccf8cb` and managed job `egui037-vectorcraft-artboard-green-ci-20261025-0589` recorded 10,197 passing test executions, zero failures and 14 ignored, including the artboard-name geometry regression, input/IME fixtures, no-bundled-font checks and the web app build. The 0.36.2 lock table and the plan-time local craft-libs/CL-2F statements below are historical planning state. Current dependency pins (read from this checkout's `Cargo.toml` and `Cargo.lock` on 2026-10-25): `egui`, `eframe`, `egui-winit`, `egui-wgpu`, `egui_glow`, `egui_extras`, `egui_kittest`, `epaint`, `emath`, `ecolor`, `epaint_default_fonts` are `0.37.0` from `storytold/egui` rev `6d518fc799681571963842f95b55a6b68431b15a`; `egui_system_font_provider` has an unused patch at that same revision and is not in the resolved dependency graph; `winit` is `0.30.13` from `storytold/winit` rev `a517b3846ee8457d84ee4975110bfda6797c44dc`; `wgpu` is `30.0.1`; `kittest` is `0.5.0`; `accesskit`/`accesskit_winit` are `0.25.1`/`0.34.1`; `craft-ui`, `craft-window`, `craft-keymap` and `craft-print` use published `storytold/craft-libs` rev `25da1314d443171b4adeaad2cd9454b273f35c6f`; `craft-pdf` uses rev `2eca9b3a53a98ac52efed2a27353c6a6927ead10`; `craft-docpath` uses rev `82a24b006eefa036b43c09a67fb9a3fbd17ffe63`.
+This checkout, at documentation-only follow-up `12fee85c9cbf9f7f1609a53bc67327b12e4f4dd1` (`M14: distinguish qualification from publication`), is locally reconciling upstream `main` `714434527e1a3e03c4b49096e30dd92b258aab50` (PR #4135: panels on craft-ui's shared docking, floating panels in OS windows). The four conflicted files were resolved by taking upstream's `dock.rs`, `panel_docking.rs` and `panel_docking_tests.rs` and deleting `floating.rs`; `git diff` against `714434527…` is empty for those three files, and no `crate::floating` or `mod floating` path remains. Managed CI job 1422 passed all 12 mandatory stages on the pre-merge tree (`12fee85c9…`); managed job `egui037-vector-combined-ci1443` subsequently passed all 12 mandatory CI stages on the combined working tree, including WASM. Independent integration reviews accepted the conflict resolutions and shared-library pins. This qualification covers the executable source and lockfile; the qualification prose was updated afterward to record that result. Native/platform GUI and IME workflows, final packages and paired app performance remain open.
+
+**Historical status (superseded, not current acceptance):** the earlier reconciliation against `main` `8bf090b25389b48aa6f9d7415de57c9ce7ccf8cb` and managed job `egui037-vectorcraft-artboard-green-ci-20261025-0589` recorded 10,197 passing test executions, zero failures and 14 ignored, including the artboard-name geometry regression, input/IME fixtures, no-bundled-font checks and the web app build. The 0.36.2 lock table and the plan-time local craft-libs/CL-2F statements below are historical planning state. Current dependency pins (read from this checkout's `Cargo.toml` and `Cargo.lock` on 2026-10-25): `egui`, `eframe`, `egui-winit`, `egui-wgpu`, `egui_glow`, `egui_extras`, `egui_kittest`, `epaint`, `emath`, `ecolor`, `epaint_default_fonts` are `0.37.0` from `storytold/egui` rev `6d518fc799681571963842f95b55a6b68431b15a`; `egui_system_font_provider` has an unused patch at that same revision and is not in the resolved dependency graph; `winit` is `0.30.13` from `storytold/winit` rev `a517b3846ee8457d84ee4975110bfda6797c44dc`; `wgpu` is `30.0.1`; `kittest` is `0.5.0`; `accesskit`/`accesskit_winit` are `0.25.1`/`0.34.1`; `craft-ui`, `craft-window`, `craft-keymap`, `craft-print`, `craft-pdf` and `craft-docpath` use published `storytold/craft-libs` rev `a0916808f7d78bed8c7b90cdf937176015454a7f`, as do the `hayro-*` and `krilla` patches.
 
 **Earlier status (historical):** implementation revision 4, 2026-10-24. The VectorCraft migration is implemented in the
 `vectorcraft-implementation` worktree; this revision incorporates the final upstream-review repairs. At revision 4
@@ -25,6 +27,15 @@ implementation worktree. The earlier pinned review checkout was `vectorcraft` at
 `crates/cad/src/import/curve.rs` (DXF spline); see
 `/home/codex/work/ssd2/task-evidence/egui037-migration-20261022/remote-plan-bases-20261023-0632.json`.
 **Clean-room note:** this plan uses only public specifications, public documentation and source code. It does not use, inspect or compare against any Adobe application, asset or output.
+
+### Shared-docking integration (current, 2026-10-25)
+
+This subsection records the current code after PR #4135; §§2–5 below remain the original planning record and are marked historical where the merged code replaced them.
+
+- **Desktop versus web/Wayland:** on the desktop, floating panels open in OS windows of their own through craft-ui's target-gated `native-windows` feature (`crates/ui-egui/Cargo.toml`, `crates/ui-egui/src/panel_docking.rs` module docs, `apps/vectorcraft/src/main.rs::native_input_hook`). On the web and on Wayland they float inside the app window (`panel_docking.rs`; `docs/control-protocol.md`).
+- **Removed app-side floating:** `crates/ui-egui/src/floating.rs` is deleted. `dock.rs` is now 137 lines and holds `panel_body` plus two scroll-bar tests; `panel_docking.rs` draws the canvas and panels through `craft_ui::docking::DockArea`, with the session-only `Runtime`, `inspect`, `hit_rects`, `known` and `valid`. The old `apply_pending_dock_width`, `cancel_legacy_drag`, `seed_dock_panel_width`, `note_dock_width`, `legacy_dock_default_width`, `shared_dock_default_width` and `dock_width_pending` symbols are gone. `tools_float.rs` keeps the Tools panel's own move state.
+- **Dock-width persistence:** `UiState::dock_width` is the app-owned preference. `panel_docking::main_width` clamps it into the default layout, `default_flags`/`Transaction::commit` writes a resized width back, `workspaces::Workspace` captures and applies it (test `saved_workspaces_restore_dock_width`), and `layout_migration` carries it across older preference files. No `PanelState` seeding is used for dock width.
+- **Tests:** `panel_docking_tests.rs` covers pointer/keyboard docking; `panel_docking_native_tests.rs` covers desktop OS windows (keyboard, drops, modal focus and `ui.docking` hit-rect filtering); `layout_migration_tests.rs` covers conversion of layouts saved before the canvas joined the shared dock; `dock.rs` retains two scroll-bar accessibility tests; `workspaces.rs` covers saved-width restore. These test surfaces are included in the combined-tree CI qualification recorded above; native GUI workflows remain a separate open gate.
 
 This plan is deliberately app-specific. The suite-wide dependency order and shared acceptance contract are in the
 local planning draft `craft-libs/docs/egui-037-suite-rollout.md` (not yet published at the time of writing); this
@@ -96,7 +107,7 @@ publishing a mixed or reduced graph.
 | storytold egui 0.36.2 | `767b1cad294120689a514bb4bd68c077e46679b9` (`craft/0.36.2`) | Existing published fork for comparison |
 | aiongg winit candidate | `8b35388bd719e8cc86a95971ba0bc026c9a8f058` (`aiongg/winit craft/0.30.13-lang`) | **Research input only**, not a production pin; missing W15P and W27 lifecycle revisions |
 | Published storytold winit | `ffae5198770d7730e718043f035a772b7dbc3b1b` (`craft/0.30.13`) | Old coherent comparator |
-| craft-libs planning base (historical) | `3832c47ef68a0e6214f2c1e85f3526b6adcb686e` | Local shared-library tree used to prepare the port; it carries PR 199's egui 0.37 update. It is not the current pin. The current workspace uses published craft-libs `25da1314d443171b4adeaad2cd9454b273f35c6f`, which includes the CL-2F capture helper |
+| craft-libs planning base (historical) | `3832c47ef68a0e6214f2c1e85f3526b6adcb686e` | Local shared-library tree used to prepare the port; it carries PR 199's egui 0.37 update. It is not the current pin. The current workspace uses published craft-libs `a0916808f7d78bed8c7b90cdf937176015454a7f`, which includes the CL-2F capture helper |
 | craft-libs PR 199 head | `b68de8c5f4f1c060904d211a7b1320aa0f7bce78` | **Stale tree; do not merge.** Reuse selected port hunks only (§3.7) |
 | craft-libs PR 199 API commit | `8614e4a04fae516fba16c22b31ff1008cb6be10b` | Historical source of the egui API-port hunks already contained in the `3832c47…` base |
 | craft-libs PR 199 README commit | `1764bca` | README/`scope_id` example hunk to review and apply separately |
@@ -149,11 +160,12 @@ Root workspace (`Cargo.toml`):
 - Current workspace UI dependencies: `egui = "0.37"`, `egui_extras = { version = "0.37",
   default-features = false, features = ["svg"] }`, `eframe = { version = "0.37", default-features = false }`,
   `egui_kittest = "0.37"`.
-- Current `craft-ui`, `craft-window` and `craft-keymap` pins are published craft-libs rev `25da131…`
-  (`craft-ui` with `serde`; `craft-window` with `egui`); `craft-print` is also on `25da131…`.
+- Current `craft-ui`, `craft-window` and `craft-keymap` pins are published craft-libs rev `a0916808…`
+  (`craft-ui` with `serde` and target-gated `native-windows`; `craft-window` with `egui`); `craft-print`,
+  `craft-pdf` and `craft-docpath` use the same revision.
 - Root `[patch.crates-io]` maps the egui family (including `eframe` and `egui_kittest`) to `storytold/egui` rev
   `6d518fc7…`, `winit` to `storytold/winit` rev `a517b384…`, and `hayro-*`/`krilla` to craft-libs rev
-  `2eca9b3a…`. The hayro/krilla patches are unrelated to egui and must remain unless a separate comparison proves
+  `a0916808…`. The hayro/krilla patches are unrelated to egui and must remain unless a separate comparison proves
   replacement.
 - `vendor/windows-link` is the only vendored package. `vendor/windows-link/VECTORCRAFT-PATCH.md` records the
   provenance (Microsoft windows-link 0.2.1, crates.io, MIT OR Apache-2.0), the sole change (`CoTaskMemFree` from
@@ -209,15 +221,15 @@ Entry-point details that must remain true:
 - The canvas is CPU-rasterized by `vectorcraft_render` and composited by wgpu; egui only uploads the raster texture.
   UI-frame work and document rendering are separate measurements.
 
-### 2.4 Current lifecycle (the facts, not the desired design)
+### 2.4 Historical 0.36.2 lifecycle (planning snapshot, not current acceptance)
 
-The current app already has:
+The 0.36.2 baseline already had:
 
 - `App::logic(&mut self, ctx, frame)` and `App::ui(&mut self, ui, frame)` in both hosts.
 - `VectorcraftApp::logic(ctx)` called from the host logic, guarded by `vectorcraft_engine::guard::catch_panic`.
 - `VectorcraftApp::ui(ui)` called from the host UI, also guarded.
 - A root `Ui` in `App::ui`; panels are already shown with `egui::Panel::…::show(ui, …)`.
-- Custom `Area`/`Window` dialogs and floating panels; no `show_viewport_deferred`/child native viewports.
+- Custom `Area`/`Window` dialogs and floating panels in the 0.36.2 baseline; at planning time the app had no `show_viewport_deferred`/child native viewports. The shared-docking integration now opens desktop floating panels as craft-ui OS windows, while the web and Wayland keep them in-page (see “Shared-docking integration (current)” above).
 - `ctx.run_ui` in many tests; `ctx.run_ui` in test helpers draws either the whole app or one panel/dialog.
 
 What 0.37 makes explicit:
@@ -256,7 +268,7 @@ numbers will drift; symbols are authoritative.
 | Class | Historical diagnostic examples | Source anchors in VectorCraft | Required migration |
 |---|---|---|---|
 | `Event::MouseWheel` gained `source: MouseWheelSource` | `canvas.rs:6226`, `chrome.rs:1691`, `stroke.rs:634`, tests | 21 `Event::MouseWheel` literals; production matches use `..` | Add `source: MouseWheelSource::Unknown` in tests/synthetic input; production events come from egui-winit. Preserve `unit`, `phase`, `delta`, `modifiers`. |
-| `WidgetType` is now a deprecated alias for `accesskit::Role`, and variants were renamed | `chrome.rs:640`, `dock.rs:122`, `edit_toolbar.rs:533`, `panel_docking.rs:1241`, `widgets.rs:192/1535/1536/2487` | 54 `WidgetType` call sites | Map per §3.2 to the renamed `Role` variants. Do not hide all roles behind `Role::Unknown`. |
+| `WidgetType` is now a deprecated alias for `accesskit::Role`, and variants were renamed | Historical anchors `chrome.rs:640`, `dock.rs:122`, `edit_toolbar.rs:533`, `panel_docking.rs:1241`, `widgets.rs:192/1535/1536/2487`; symbols are authoritative, not these line positions | 54 `WidgetType` call sites at planning time; the current tree has none | Map per §3.2 to the renamed `Role` variants. Do not hide all roles behind `Role::Unknown`. |
 | `Id` is not an `IdSalt` | `dialogs/layer_options.rs:129/130`, `menus.rs:3482/3484` | `Atom::custom(chip, …)`; `Panel::right(Id::new(...))`; `ComboBox::from_id_salt(id)` | `IdSalt::new(...)` only for a parameter typed exactly `IdSalt` (`Atom::custom`); pass the original source to `impl AsIdSalt` APIs (`Panel`, `ComboBox`, `ScrollArea`, `make_persistent_id`). `Id::unique(...)` for root ids. Never pass an `Id` as a salt. |
 | `WidgetInfo.typ` removed | `dialogs/tests_warp.rs:509` | one test | Use `info.role`. |
 | `scroll_area::State.offset` private | `font_menu.rs:507`, `panels/layers.rs:650`, `tests_numfields.rs:614` | 3 sites | Use the public `offset()` method. |
@@ -301,16 +313,16 @@ names.
   - Exact `IdSalt` parameters (`Atom::custom`, `Id::with_salt`) take `IdSalt::new(source)`.
 - `Id` still satisfies the blanket `AsIdSalt` impl (`Hash + Debug`), so some wrong calls compile while hashing an
   `Id` as a salt. That is the wrong identity even when it compiles; `Atom::custom` rejects `Id` outright.
-- Dynamic dock columns (`floating.rs`: `Panel::right(Id::new(("dock-column", first)))`) must become
-  `Panel::right(("dock-column", first))`.
+- Historical planning (pre-#4135): dynamic dock columns in the then-existing app `floating.rs` used `Panel::right(Id::new(("dock-column", first)))` and were to become `Panel::right(("dock-column", first))`. The app `floating` module is now deleted; craft-ui's shared docking owns dock columns and their layout in `panel_docking.rs`.
 - Do not mechanically wrap an existing `Id` in `IdSalt::new(...)` just to satisfy a signature. Audit the few
   `make_persistent_id`/`with`/`Atom::custom` sites individually and preserve the intended key with a focus/state
-  test. `ComboBox::from_id_salt` in `widgets::combo`, `Panel::right` in `floating.rs`, and `Atom::custom` in
-  `dialogs/layer_options`/`menus` are the concrete sites to review.
+  test. `ComboBox::from_id_salt` in `widgets::combo`, `Panel::right` in the deleted `floating.rs` (historical), and `Atom::custom` in `dialogs/layer_options`/`menus` were the concrete sites to review.
 - `Id::NULL` and `Id::with(...)` remain valid.
 - `Id::unique` also registers debug id sources; do not let debug-only memory growth become a concern.
 
-### 3.4 Panel identity/persistence
+### 3.4 Panel identity/persistence (historical planning; superseded by shared docking)
+
+> **Historical planning (pre-#4135; not current code).** The text below describes the old app-owned `PanelState` width path and is retained as planning evidence. The current tree has none of `seed_dock_panel_width`, `note_dock_width`, `apply_pending_dock_width`, `legacy_dock_default_width`, `shared_dock_default_width` or `dock_width_pending`. Width now persists through `UiState::dock_width`: `panel_docking::main_width` clamps it into the default layout, `default_flags`/`Transaction::commit` writes the resized width back, `workspaces::Workspace` captures and applies it (`saved_workspaces_restore_dock_width`), and `layout_migration` carries it across older files. The layout itself is craft-ui `DockArea`/`craft_ui::docking::Layout`.
 
 `crates/ui-egui/src/dock.rs::seed_dock_panel_width` and `note_dock_width` read/write
 `egui::containers::panel::PanelState` under `Id::new(panel)`. In 0.37 `Panel` internally derives its bar id from
@@ -835,16 +847,12 @@ deadlines and background scheduling. Keep egui's `i.time` for UI animation/gestu
 - Pass the existing `&mut Ui` from `App::ui` to panels; never call `Context::root_ui` inside `App::ui`, tests that
   use `run_ui`, or any code that already holds the root. `root_ui` is only for a `Context`-only integration, which
   VectorCraft does not have.
-- Keep `egui::Area`/`Window::show(ctx)` for floating panels/dialogs: they create their own `Ui` and do not borrow
-  the root. Do not convert them to `root_ui` calls.
+- Dialogs keep `egui::Area`/`Window::show(ctx)`: they create their own `Ui` and do not borrow the root. Floating panels are drawn by `craft_ui::docking::DockArea`; on the desktop craft-ui's `native-windows` feature gives them OS windows of their own, and on the web and Wayland they float inside the app window.
 - Panel order remains app bar / control bar / status+hint / toolbar / dock / central canvas / floating / dialogs.
   The new `Panel` id-salt behavior must not change the order or clip; assert `response.rect`, `ui.clip_rect()` and
   hit positions after resize/DPI changes.
-- VectorCraft has no `show_viewport_deferred`/child native viewport. Do not add one. Screenshot/root behavior is
-  single-viewport; still test two queued screenshot requests (issued one at a time) and hidden-window paint because
-  the callback contract is new.
-- Docking/floating use `craft_ui::docking` and app `floating`; keep their layout model and permissions. The
-  `craft-ui` rebase must preserve the current `MoveFloating` group permission checks.
+- VectorCraft does not call `show_viewport_deferred` itself. The only child native viewports are the desktop floating-panel windows that craft-ui's `native-windows` feature creates; the web and Wayland stay in one window. Floating windows' controls are excluded from `ui.docking`'s `hitRects` and from control-channel pointer input (`panel_docking_native_tests.rs`, `docs/control-protocol.md`). Retest screenshot/root behavior for the main viewport with the native child windows present; still test two queued screenshot requests (issued one at a time) and hidden-window paint because the callback contract is new.
+- Docking/floating use `craft_ui::docking`; the app `floating` module is deleted. `panel_docking::Runtime` keeps only session-only space/raise/focus state, and `panel_docking::valid`/`known` plus `Permissions` preserve the layout model and the `MoveFloating` group permission checks.
 - Test: panels open/close/reorder, dock width restore, floating panel drag/dock, popup/flyout focus, window resize
   and 1x/1.5x/2x scale; screenshots and geometry agree.
 
@@ -1007,7 +1015,7 @@ Start with the tests that already encode behaviour:
 | Area | Existing tests/files | What to add |
 |---|---|---|
 | Whole-window frame | `crates/ui-egui/src/graphics.rs` `frame`, texture tests | tick/ui split, multi-pass, hidden paint, texture counts |
-| Panels/dock | `panel_docking.rs`, `panel_docking_tests.rs`, `dock.rs` tests | dock width restore, panel order/clip, 1x/1.5x/2x, floating |
+| Panels/dock | `panel_docking_tests.rs` (pointer/keyboard docking), `panel_docking_native_tests.rs` (desktop OS windows), `layout_migration_tests.rs` (older layouts), `dock.rs` (2 scroll-bar tests), `workspaces.rs` (saved dock width) | dock width restore, panel order/clip, 1x/1.5x/2x, floating, native-window focus/keyboard/drops, layout conversion |
 | Tabs/menus | `panels/tabs.rs` tests, `menus.rs` | keyboard/accessibility tree, menu geometry |
 | Fields | `tests_numfields.rs`, `widgets.rs` tests | wheel, focus, names, roles, click-away selection |
 | Canvas | `canvas.rs` tests, `tests_rotateview.rs`, `tests_scrub.rs` | wheel source, zoom/pan, multi-pass, IME |
@@ -1303,8 +1311,8 @@ These are not “future work”; they block calling the migration done:
    `cargo fetch --locked`. No intermediate fork stage is a production pin; candidate aiongg revisions remain
    research inputs; no final SHA is invented in this plan.
 2. **Final craft-libs revision (resolved by the published pin).** The CL-1/CL-2F delta is published in
-   craft-libs `25da131…`, and the current workspace pins `craft-ui`, `craft-window`, `craft-keymap` and
-   `craft-print` to it. The plan-time requirement was to finish that delta on the `3832c47…` base (which already
+   craft-libs `25da131…`; the current workspace pins `craft-ui`, `craft-window`, `craft-keymap` and
+   `craft-print` to descendant `a0916808…`, retaining that delta and upstream shared docking. The plan-time requirement was to finish that delta on the `3832c47…` base (which already
    carries the selected `8614e4a`/`1764bca` changes), preserving `craft-platform`,
    security/settings/docking/printing fixes, pin D1b and pass `craft-ui` visual regression. Do not merge PR199
    head `b68de8c` or audit tree `ec8840a` as trees. L1 (CL-1) and L2 (CL-2F) preceded V2; publication waited for
@@ -1488,6 +1496,7 @@ These are decisions this plan recommends but does not silently make:
 | 2026-10-23 | Revision 3: resolved every `vectorcraft-v2` finding (§8.2) by replacing contradictory prose: stock-0.37 third arm in visual/performance; shared 4/128/256 MiB capture admission with epoch-bound geometry and hidden paint request; W27 old-epoch invalidation and complete E21b contract; P7c owns #8763/#8748; corrected production `Tofu` vs kittest `Panic` and non-propagating kittest dev-dependency fonts; craft-ui exact-pixel visual regressions; split `ui-deps` ledger; split D1a winit / D1b egui P8; per-stage rollback; removed the dead provisional capture slot and app-local adapter; corrected clipboard scope; added W15P synchronous claims and bounded transfers; set 5% median/10% p95/5% RSS gates with no tolerance widening. Static documentation only; no build/test run. |
 | 2026-10-24 | Revision 4: implementation status; repaired the final upstream-review defects (path+data capture downgrade, image-paste repaint and paste-time chord, monotonic hidden tick, IME context invalidation and unavailable revisions, per-viewport exact-once input, Artboard and Split Grid accessible names, fail-closed stale synthetic input); moved the shared-library base reference to the local `3832c47…` implementation base. At that revision the exact tree still needed fresh managed verification before publication. |
 | 2026-10-25 | Documentation reconciliation after PR 4113 and managed job `egui037-vector-postmerge-ci-20261025-1381`: recorded the current merge tree and pass result, marked the `8bf090b…`/`0589` status and 0.36.2 lock table historical, listed current pins from `Cargo.toml`/`Cargo.lock`, and corrected the plan-time local CL-2F base description to the published craft-libs `25da131…`. Documentation only; no build/test run. |
+| 2026-10-25 | Shared-docking reconciliation: recorded the local merge of upstream `main` `714434527…` (PR #4135), the upstream/delete resolution of the four conflicts, the reviewed recolor code already in `main`, and CI 1422's pre-merge pass; corrected current docking claims (desktop OS windows, web/Wayland in-page, deleted `floating.rs` and width helpers, `UiState::dock_width` persistence, new native and layout-migration tests) while retaining the earlier planning sections as historical. The combined executable source and lockfile were subsequently qualified by managed job `egui037-vector-combined-ci1443` (all 12 stages passed); the status text was updated after that run. |
 
 
 ## Local implementation update — 2026-10-23
