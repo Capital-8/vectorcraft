@@ -25,6 +25,8 @@ struct RootGroupDrag {
     generation: u64,
 }
 
+/// Restore the pre-drag panel layout and cancel the legacy docking drag when one is recorded;
+/// return whether a drag was cancelled.
 fn cancel_legacy_drag(app: &mut VectorcraftApp, ctx: &egui::Context) -> bool {
     let key = egui::Id::unique("vectorcraft-panel-docking").with("legacy-origin");
     let previous = ctx.data_mut(|data| data.remove_temp::<LegacyDrag>(key));
@@ -925,6 +927,8 @@ fn tab_area_double_clicked(
     (at.x >= tabs && at.x < group.strip.right() - 24.0).then_some(group.shown)
 }
 
+/// Draw the shared dock, finish or cancel a root-group drag, collapse groups, run panel commands
+/// and report drop previews; return whether a dock layout exists.
 pub(crate) fn show(app: &mut VectorcraftApp, ui: &mut egui::Ui) -> bool {
     let root_key = egui::Id::unique("vectorcraft-root-group-drag");
     if let Some(drag) = ui.ctx().data(|data| data.get_temp::<RootGroupDrag>(root_key)) {

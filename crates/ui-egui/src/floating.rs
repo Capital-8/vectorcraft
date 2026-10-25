@@ -125,6 +125,7 @@ pub(crate) fn root_groups_id() -> Id {
     Id::unique("floating-root-groups")
 }
 
+/// Temp-memory key for the floating-panel move state.
 fn move_id() -> Id {
     Id::unique("floating-move")
 }
@@ -150,6 +151,7 @@ pub(crate) fn icons_rect_id() -> Id {
     Id::unique("floating-icons-rect")
 }
 
+/// Stable id of the floating tools zone used for dock and drop hit testing.
 pub(crate) fn tools_zone_id() -> Id {
     Id::unique("floating-tools-zone")
 }

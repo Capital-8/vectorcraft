@@ -42,6 +42,8 @@ fn seed_dock_panel_width(ui: &egui::Ui, panel: &str, width: f32) {
     ui.ctx().data_mut(|data| data.insert_persisted(ui.scope_id().with(panel), state));
 }
 
+/// Apply a requested dock width once by seeding the panel's 0.37 persisted state; ignore non-finite
+/// or non-positive widths and clear the pending flag.
 pub(crate) fn apply_pending_dock_width(app: &mut VectorcraftApp, ui: &egui::Ui, panel: &str, clamp: fn(f32) -> f32) {
     if !app.ui.dock_width_pending {
         return;

@@ -970,6 +970,7 @@ fn two_stacked_groups_both_collapsed_are_both_as_short_as_their_tabs() {
     }
 }
 
+/// Return the centre of a panel's tab in the shared dock test harness.
 fn tab_center(h: &Harness<'static, VectorcraftApp>, panel: &str) -> Pos2 {
     h.ctx.read_response(egui::Id::unique("vectorcraft-panel-docking").with(("tab", &panel.to_string()))).unwrap().rect.center()
 }

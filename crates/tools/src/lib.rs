@@ -785,6 +785,7 @@ pub enum ImeSurrounding {
 }
 
 impl Default for ImeSurrounding {
+    /// Report surrounding text as unavailable because no document is active.
     fn default() -> Self {
         Self::Unavailable("no document is active")
     }
